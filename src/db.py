@@ -33,6 +33,8 @@ class Image(Base):  # type: ignore
         from src.utils import get_image_url
 
         original_url = get_image_url(self.key)
+        if not original_url:
+            return {"original_url": None, "processed_url": None}
         processed_url = (
             get_image_url(self.processed_key) if self.processed_key else None
         )

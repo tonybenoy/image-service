@@ -56,6 +56,7 @@ async def read_image(request: Request, image_id: int, db: Session = Depends(get_
     """
     db_image = db.query(Image).filter(Image.id == image_id).first()
     if not db_image:
+        logger.error("Image %s not found", image_id)
         return templates.TemplateResponse("index.html", {"request": request})
     return templates.TemplateResponse(
         "image.html",
@@ -78,10 +79,16 @@ async def upload_image(
     """
     logger.info("Uploading image to S3")
     if image.content_type.startswith("image/") is False:
+        logger.error("Invalid file type")
         return templates.TemplateResponse(
             "error.html", {"request": request, "msg": "Invalid file type"}
         )
     file_name = upload_image_to_s3(image.filename, image.file, Settings.S3_BUCKET)
+    if not file_name:
+        logger.error("Failed to upload image to S3")
+        return templates.TemplateResponse(
+            "error.html", {"request": request, "msg": "Failed to upload image"}
+        )
     db_image = Image(
         name=image.filename,
         key=file_name,
@@ -95,6 +102,7 @@ async def upload_image(
         db_image.id,
         Settings.S3_BUCKET,
     )
+    logger.info("Image %s added to queue", db_image.id)
     logger.info("Image uploaded to S3")
     return templates.TemplateResponse(
         "index.html",
@@ -110,6 +118,15 @@ async def upload_image(
 async def get_images(request: Request, db: Session = Depends(get_db)):
     """Get all images."""
     images = db.query(Image).all()
+    if not images:
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "home": request.url_for("index"),
+                "images_li": request.url_for("get_images"),
+            },
+        )
     ims = []
     for image in images:
         ims.append(
