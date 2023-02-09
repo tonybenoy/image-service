@@ -19,6 +19,8 @@ boto3 = "^1.26.67"
 sqlalchemy = "^2.0.2"
 alembic = "^1.9.3"
 psycopg2-binary = "^2.9.5"
+opencv-python-headless = "^4.7.0.68"
+pillow = "^9.4.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.0.0"

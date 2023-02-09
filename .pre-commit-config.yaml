@@ -31,10 +31,10 @@ repos:
             [
               "-rn",
               "-sn",
+               "--generated-members=cv2.",
               "--disable=R,C",
               "--init-hook=import sys; sys.path.append('.')",
               "--ignore-paths=alembic",
-
             ]
 
     - repo: https://github.com/pycqa/isort

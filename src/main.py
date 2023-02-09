@@ -39,13 +39,29 @@ async def read_item(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@app.get("/image/{image_id}", response_class=HTMLResponse)
+async def read_image(request: Request, image_id: int, db: Session = Depends(get_db)):
+    db_image = db.query(Image).filter(Image.id == image_id).first()
+    if not db_image:
+        return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(
+        "image.html",
+        {
+            "request": request,
+            "image": db_image.get_full_url(),
+        },
+    )
+
+
 @app.post("/upload", response_class=HTMLResponse)
 async def upload_image(
     request: Request, image: UploadFile = File(...), db: Session = Depends(get_db)
 ):
     """Upload image to S3."""
     logger.info("Uploading image to S3")
-    file_name = upload_image_to_s3(image)
+    if image.content_type.startswith("image/") is False:
+        raise ValueError("File is not an image")
+    file_name = upload_image_to_s3(image.filename, image.file, "test")
     db_image = Image(
         name=image.filename,
         key=file_name,
