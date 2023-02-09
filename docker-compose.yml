@@ -19,7 +19,7 @@ services:
 
   rq-default:
     image: fastapi-step
-    command: rq worker ${RQ_QUEUE} --url redis://${REDIS_HOST}:${REDIS_POST}/${REDIS_DB}
+    command: rq worker ${RQ_QUEUE} --url redis://${REDIS_HOST}:${REDIS_PORT}/${REDIS_DB}
     depends_on:
       - redis_db
     network_mode: host

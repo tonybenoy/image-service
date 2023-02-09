@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <table>
+      <tr>
+        <th>Id</th>
+        <thImage</th>
+        <th>Status</th>
+      </tr>
+      {% for image in images %}
+      <tr>
+        <td>{{ image["id"] }}</td>
+        <td> <a href={{ image["url"] }}>{{image["name"]}} </a>  </td>
+        <td>{{image["processed"] }}</td>
+        </tr>
+      {% endfor %}
+{% endblock %}

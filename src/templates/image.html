@@ -1,18 +1,5 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>My App</title>
-    <style>
-        img {
-            width: 200px;
-            height: 300px;
-        }
-    </style>
-</head>
-
-<body>
+{% extends "base.html" %}
+{% block content %}
     <div>Original
     <img src={{image.original_url}} />
     <a href={{image.original_url}} download>Download</a>
@@ -21,6 +8,4 @@
     <img src={{image.processed_url}} />
     <a href={{image.processed_url}} download>Download</a>
     </div>
-</body>
-
-</html>
+{% endblock %}

@@ -26,8 +26,6 @@ templates = Jinja2Templates(directory="src/templates")
 
 logger = get_logger(__name__, LEVELS[Settings.LOG_LEVEL])
 
-logger.error(Settings.DATABASE_URL)
-
 
 @app.get("/test", response_model=Dict[str, str])
 async def test() -> Dict[str, str]:
@@ -38,8 +36,15 @@ async def test() -> Dict[str, str]:
 
 
 @app.get("/", response_class=HTMLResponse)
-async def read_item(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+async def index(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "home": request.url_for("index"),
+            "images_li": request.url_for("get_images"),
+        },
+    )
 
 
 @app.get("/image/{image_id}", response_class=HTMLResponse)
@@ -52,6 +57,8 @@ async def read_image(request: Request, image_id: int, db: Session = Depends(get_
         {
             "request": request,
             "image": db_image.get_full_url(),
+            "home": request.url_for("index"),
+            "images_li": request.url_for("get_images"),
         },
     )
 
@@ -63,7 +70,9 @@ async def upload_image(
     """Upload image to S3."""
     logger.info("Uploading image to S3")
     if image.content_type.startswith("image/") is False:
-        raise ValueError("File is not an image")
+        return templates.TemplateResponse(
+            "error.html", {"request": request, "msg": "Invalid file type"}
+        )
     file_name = upload_image_to_s3(image.filename, image.file, Settings.S3_BUCKET)
     db_image = Image(
         name=image.filename,
@@ -79,4 +88,37 @@ async def upload_image(
         Settings.S3_BUCKET,
     )
     logger.info("Image uploaded to S3")
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "home": request.url_for("index"),
+            "images_li": request.url_for("get_images"),
+        },
+    )
+
+
+@app.get("/images", response_class=HTMLResponse)
+async def get_images(request: Request, db: Session = Depends(get_db)):
+    """Get all images."""
+    images = db.query(Image).all()
+    ims = []
+    for image in images:
+        ims.append(
+            {
+                "id": image.id,
+                "name": image.name,
+                "url": request.url_for("read_image", image_id=image.id),
+                "processed": IMAGE_STATUS(image.processed).name,
+            }
+        )
+
+    return templates.TemplateResponse(
+        "images.html",
+        {
+            "request": request,
+            "images": ims,
+            "home": request.url_for("index"),
+            "images_li": request.url_for("get_images"),
+        },
+    )
