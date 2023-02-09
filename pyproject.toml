@@ -10,6 +10,15 @@ packages = [{include = "step_image"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.90.0"
+gunicorn = "^20.1.0"
+uvicorn = "^0.20.0"
+jinja2 = "^3.1.2"
+python-multipart = "^0.0.5"
+rq = "^1.12.0"
+boto3 = "^1.26.67"
+sqlalchemy = "^2.0.2"
+alembic = "^1.9.3"
+psycopg2-binary = "^2.9.5"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.0.0"
@@ -17,6 +26,8 @@ isort = "^5.12.0"
 pylint = "^2.16.1"
 pre-commit = "^3.0.4"
 black = "^23.1.0"
+types-redis = "^4.4.0.6"
+sqlalchemy-stubs = "^0.4"
 
 [build-system]
 requires = ["poetry-core"]

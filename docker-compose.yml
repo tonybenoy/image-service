@@ -1,0 +1,48 @@
+version: "3"
+services:
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: fastapi-step
+    ports:
+      - "8000:8000"
+    network_mode: host
+
+  redis_db:
+    image: redis:latest
+    network_mode: host
+    ports:
+      - target: 6379
+        published: 6379
+
+  rq-default:
+    image: fastapi-step
+    command: rq worker default --url redis://127.0.0.1:6379/0
+    depends_on:
+      - redis_db
+    network_mode: host
+
+  minio:
+    image: minio/minio
+    network_mode: host
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data/minio:/data
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: rootpassword
+    command: server --console-address ":9001" /data
+
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    network_mode: host
+    environment:
+      - POSTGRES_DB=step
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
