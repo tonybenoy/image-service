@@ -14,12 +14,12 @@ services:
     image: redis:latest
     network_mode: host
     ports:
-      - target: 6379
-        published: 6379
+      - target: ${REDIS_PORT}
+        published: ${REDIS_PORT}
 
   rq-default:
     image: fastapi-step
-    command: rq worker default --url redis://127.0.0.1:6379/0
+    command: rq worker ${RQ_QUEUE} --url redis://${REDIS_HOST}:${REDIS_POST}/${REDIS_DB}
     depends_on:
       - redis_db
     network_mode: host
@@ -33,8 +33,8 @@ services:
     volumes:
       - ./data/minio:/data
     environment:
-      MINIO_ROOT_USER: root
-      MINIO_ROOT_PASSWORD: rootpassword
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${S3_ACCESS_KEY}
     command: server --console-address ":9001" /data
 
   db:
@@ -43,6 +43,6 @@ services:
       - ./data/db:/var/lib/postgresql/data
     network_mode: host
     environment:
-      - POSTGRES_DB=step
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
