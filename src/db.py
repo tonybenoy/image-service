@@ -10,6 +10,7 @@ Session = sessionmaker(bind=engine)
 
 
 def get_db():
+    """Get a database session."""
     db = Session()
     try:
         yield db
@@ -26,6 +27,9 @@ class Image(Base):  # type: ignore
     processed_key = Column(String, nullable=True)
 
     def get_full_url(self):
+        """Get the full url for the image.
+        Returns:
+            dict: A dictionary with the original and processed urls."""
         from src.utils import get_image_url
 
         original_url = get_image_url(self.key)

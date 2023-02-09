@@ -31,6 +31,8 @@ pre-commit = "^3.0.4"
 black = "^23.1.0"
 types-redis = "^4.4.0.6"
 sqlalchemy-stubs = "^0.4"
+pytest = "^7.2.1"
+coverage = "^7.1.0"
 
 [build-system]
 requires = ["poetry-core"]

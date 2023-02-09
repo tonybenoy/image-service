@@ -9,6 +9,10 @@ services:
     ports:
       - "8000:8000"
     network_mode: host
+    depends_on:
+      - db
+      - minio
+      - redis_db
 
   redis_db:
     image: redis:latest

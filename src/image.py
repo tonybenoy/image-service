@@ -6,6 +6,12 @@ from PIL import Image
 
 
 def cartoon_image(file: bytes):
+    """Convert an image to a cartoon image.
+    Args:
+        file (bytes): The image file.
+    Returns:
+        io.BytesIO: The image file in memory.
+    """
     img = cv2.imdecode(np.frombuffer(file, np.uint8), -1)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

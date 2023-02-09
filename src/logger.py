@@ -11,6 +11,12 @@ gunicorn_logger = logging.getLogger("gunicorn.error")
 
 
 def get_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
+    """Get a logger.
+    Args:
+        name (str): The name of the logger.
+        level (int, optional): The level of the logger. Defaults to logging.DEBUG.
+    Returns:
+        logging.Logger: The logger."""
     logger = logging.getLogger(name)
     logger.setLevel(level)
     handler = logging.StreamHandler()

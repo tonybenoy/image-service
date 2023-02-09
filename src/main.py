@@ -37,6 +37,7 @@ async def test() -> Dict[str, str]:
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
+    """Index page."""
     return templates.TemplateResponse(
         "index.html",
         {
@@ -49,6 +50,10 @@ async def index(request: Request):
 
 @app.get("/image/{image_id}", response_class=HTMLResponse)
 async def read_image(request: Request, image_id: int, db: Session = Depends(get_db)):
+    """Get image from S3.
+    Args:
+        image_id (int): The image id.
+    """
     db_image = db.query(Image).filter(Image.id == image_id).first()
     if not db_image:
         return templates.TemplateResponse("index.html", {"request": request})
@@ -67,7 +72,10 @@ async def read_image(request: Request, image_id: int, db: Session = Depends(get_
 async def upload_image(
     request: Request, image: UploadFile = File(...), db: Session = Depends(get_db)
 ):
-    """Upload image to S3."""
+    """Upload image to S3.
+    Args:
+        image (UploadFile): The image file.
+    """
     logger.info("Uploading image to S3")
     if image.content_type.startswith("image/") is False:
         return templates.TemplateResponse(
